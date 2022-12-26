@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -25,10 +28,11 @@ public class GameSocketController {
     private SocketIOServer server;
 
     private Logger logger;
-
+    private ScheduledExecutorService ex;
     @PostConstruct
     private void init() {
         logger = Logger.getLogger(GameSocketController.class.getName());
+        ex = Executors.newSingleThreadScheduledExecutor();
         server.start();
         server.addConnectListener(client -> {
             logger.info("Client connected: " + client.getSessionId());
@@ -38,7 +42,8 @@ public class GameSocketController {
             logger.info("Client disconnected: " + client.getSessionId());
         });
 
-        server.addEventListener("join", JoinGameMessage.class, (client, data, ackRequest) -> {
+        server.addEventListener("join_game", JoinGameMessage.class, (client, data, ackRequest) -> {
+            System.out.println(data.toString());
             Optional<Game> gameOpt = gameRepository.findById(data.getGameId());
 
             if (gameOpt.isPresent()) {
@@ -52,7 +57,11 @@ public class GameSocketController {
                         game.setStatus(GameStatus.IN_PROGRESS);
                         gameRepository.save(game);
                         client.joinRoom(data.getGameId().toString());
-                        sendGameStart(game);
+                        client.sendEvent("join_success", data.getGameId());
+
+                        sendPreStart(game);
+
+                        ex.schedule(() -> sendGameStart(game), 10, TimeUnit.SECONDS);
                     } else {
                         // Game is full
                     }
@@ -60,7 +69,7 @@ public class GameSocketController {
                     game.setPlayer1(data.getPlayerName());
                     gameRepository.save(game);
                     client.joinRoom(data.getGameId().toString());
-                    sendGameWaiting(game);
+                    client.sendEvent("join_success", data.getGameId());
                 }
             }
         });
@@ -75,13 +84,14 @@ public class GameSocketController {
                     if (game.isTurnOf(data.getPlayer())) {
                         if (game.checkIfCanPLayHere(data.getX(), data.getY())) {
                             game.updateBoard(data.getX(), data.getY(), data.getPlayer());
+
+                            gameRepository.save(game);
+                            sendGameUpdate(game);
+
                             if (game.checkWin()) {
                                 gameRepository.save(game);
                                 sendGameWin(game);
-                                return;
                             }
-                            gameRepository.save(game);
-                            sendGameUpdate(game);
                         }
                     }
                 }
@@ -93,8 +103,9 @@ public class GameSocketController {
         server.getRoomOperations(game.getId().toString()).sendEvent("game_start", new GameStartMessage(game));
     }
 
-    public void sendGameWaiting(Game game) {
-        server.getRoomOperations(game.getId().toString()).sendEvent("game_waiting", game);
+    public void sendPreStart(Game game) {
+        System.out.println("pute");
+        server.getRoomOperations(game.getId().toString()).sendEvent("game_soon_start", game.getId());
     }
 
     public void sendGameUpdate(Game game) {
