@@ -1,49 +1,5 @@
-.list_games {
-
-    display: flex;
-    justify-content: center;
-    margin-top: 10vh;
-    gap: 20px;
-    min-width: 200px;
-    width: 1%;
-    padding: 20px;
-    align-items: baseline;
-    border-radius: 20px;
-    flex-direction: column;
-    background-color: rgb(88, 113, 255);
-}
-
-.make_game {
-
-        display: flex;
-        justify-content: center;
-        margin-top: 10vh;
-        gap: 20px;
-        min-width: 200px;
-        width: 1%;
-        padding: 20px;
-        align-items: baseline;
-        border-radius: 20px;
-        flex-direction: column;
-        background-color: rgb(11, 182, 88);
-}
-
-.join_game {
-    display: flex;
-    justify-content: center;
-    margin-top: 10vh;
-    gap: 20px;
-    min-width: 200px;
-    width: 1%;
-    padding: 20px;
-    align-items: baseline;
-    border-radius: 20px;
-    flex-direction: column;
-    background-color: rgba(208, 255, 0, 0.51);
-}
-
-.join_game input[type="text"],
-.join_game select {
+input[type="text"],
+select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -53,8 +9,9 @@
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 input[type="text"]:focus,
-.join_game select {
+select {
     outline: none;
 }
 
@@ -74,9 +31,9 @@ input[type="submit"]:hover {
     background-color: #1d1d1d;
 }
 
-button {
+.pute {
     font-size: 20px;
-    width: 100%;
+    width: 60%;
     background-color: #313131;
     color: white;
     padding: 14px 20px;
@@ -86,6 +43,34 @@ button {
     cursor: pointer;
 }
 
+ul {
+    list-style-type: none;
+}
+
 button:hover {
     background-color: #1d1d1d;
+}
+
+.bo {
+    text-align: center;
+}
+
+.box_container {
+    text-align: center;
+}
+
+.box {
+    vertical-align: top;
+    display: inline-block;
+    margin-left: 150px;
+    justify-content: center;
+    margin-top: 10vh;
+    gap: 20px;
+    min-width: 200px;
+    width: 20%;
+    padding: 20px;
+    align-items: baseline;
+    border-radius: 20px;
+    flex-direction: column;
+    background-color: rgb(88, 113, 255);
 }

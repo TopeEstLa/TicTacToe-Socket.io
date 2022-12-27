@@ -1,19 +1,23 @@
 package me.topeestla.tictactoe.message;
 
+import me.topeestla.tictactoe.enums.JoinStatus;
+
 /**
  * @author TopeEstLa
  */
-public class JoinGameMessage {
+public class JoinCallbackMessage {
 
     private Long gameId;
     private String playerName;
+    private JoinStatus status;
 
-    public JoinGameMessage() {
+    public JoinCallbackMessage() {
     }
 
-    public JoinGameMessage(Long gameId, String playerName) {
+    public JoinCallbackMessage(Long gameId, String playerName, JoinStatus status) {
         this.gameId = gameId;
         this.playerName = playerName;
+        this.status = status;
     }
 
     public Long getGameId() {
@@ -22,5 +26,9 @@ public class JoinGameMessage {
 
     public String getPlayerName() {
         return playerName;
+    }
+
+    public JoinStatus getStatus() {
+        return status;
     }
 }

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import "../public/game.css";
 import styled from "styled-components";
+import {toast} from "react-toastify";
 
 const RowContainer = styled.div`
   width: 100%;
@@ -57,12 +58,27 @@ export const GameComponent = ({socketIO, username, setInGame, setGameStarted, se
 
     function handleWin() {
         socketIO.on("game_win", (data) => {
-            alert(data.winner + " won the game");
+            data.winner === username ? toast.success("🏆 You win") : toast.error("💩 You lose");
             setInGame(false)
             setGameStarted(false)
             setGamePreStart(false)
             setGameId(false)
             setGameData("")
+        });
+    }
+
+    function handleMoveCallBack() {
+        socketIO.on("game_callback", (data) => {
+            toast.error(data.status, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         });
     }
 
@@ -81,6 +97,7 @@ export const GameComponent = ({socketIO, username, setInGame, setGameStarted, se
         updateInfo(gameData);
         onUpdateBoard();
         handleWin();
+        handleMoveCallBack();
     }, []);
 
     function sendMove(moveX, movY) {

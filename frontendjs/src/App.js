@@ -6,6 +6,7 @@ import {HomeComponent} from "./components/HomeComponent";
 import {useEffect, useState} from "react";
 import {PreStartComponent} from "./components/PreStartComponent";
 import {GameComponent} from "./components/GameComponent";
+import { ToastContainer, toast } from 'react-toastify';
 
 const socket = io.connect("http://localhost:8085");
 
@@ -26,11 +27,36 @@ function App() {
     const [gameData, setGameData] = useState("");
 
     function handleJoinSuccess() {
-        socket.on("join_success", (data) => {
-            if (!isInGame) {
-                setInGame(true);
-                setGameId(data.gameId);
-                setRequestGameId("");
+        socket.on("join_callback", (data) => {
+            console.log(data)
+            if (data.status === "SUCCESS") {
+                if (!isInGame) {
+                    toast.success('🦄 Parti rejoins !', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+
+                    setInGame(true);
+                    setGameId(data.gameId);
+                    setRequestGameId("");
+                }
+            } else {
+                toast.error(data.status, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             }
         });
     }
@@ -90,6 +116,7 @@ function App() {
                     )}
                 </div>
             )};
+            <ToastContainer />
         </div>
     );
 }
